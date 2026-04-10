@@ -35,3 +35,25 @@ venv/
 
 # Logs
 *.log
+
+# Local app settings
+settings.json
+
+# Local runtime state and generated artifacts
+assistant/*
+!assistant/README.md
+!assistant/persona.example.json
+!assistant/memory_layers.example.json
+!assistant/chat_history.example.json
+flows/*
+!flows/README.md
+prompts/*
+!prompts/README.md
+subflows/*
+!subflows/README.md
+output/*
+!output/.gitkeep
+vector_stores/*
+!vector_stores/.gitkeep
+report.txt
+result.txt
