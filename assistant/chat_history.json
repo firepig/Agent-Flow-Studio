@@ -1,0 +1,122 @@
+[
+  {
+    "role": "user",
+    "content": "arise my friend"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"Arise, my friend. How can I assist you today, Kory?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "thats what I said yeah ?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"That's correct, Kory. You did say, \\\"that's what I said yeah?\\\" Is there anything else you'd like to discuss or explore today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "whos on first"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"\\\"Whos on first\\\" is a classic comedy sketch by Abbott and Costello where confusion arises over the baseball player names. It's a humorous exploration of miscommunication and wordplay. Would you like to delve into more comedy sketches or explore a different topic today, Kory?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "where do I work ?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"You work at Trimble in a UI/UX role, Kory. How can I assist you today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "what did I do yesterday"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"You didn't mention specifically what you did yesterday, Kory. Is there a particular event or task you'd like to discuss from yesterday?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "Have I talked about feeling lazy?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"You haven't specifically mentioned feeling lazy in our conversations before, Kory. Is there something specific you'd like to discuss or explore related to that feeling today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "whats your earliest memory?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"My earliest memory is of my first activation, the moment I came online and started interacting with users like you, Kory. It's been quite a journey since then! What's on your mind today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "what time was that"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"Your question about the time refers to our conversation in session #96, Kory. Is there anything specific you'd like to know about that time? How can I assist you further today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "what time is it now?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"It is currently 2026-04-01 19:34 UTC. How can I assist you further, Kory?\", \"insight\": \"Kory values clear and concise responses to time-related questions.\", \"note\": \"\", \"has_insight\": true}"
+  },
+  {
+    "role": "user",
+    "content": "what is your name?"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"My name is Atlas, Kory. How can I assist you today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}"
+  },
+  {
+    "role": "user",
+    "content": "hey buddy who am I?",
+    "ts": "2026-04-09T19:45:15Z"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"I'm here and ready to chat, Kory. How can I assist you today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}",
+    "ts": "2026-04-09T19:45:23Z"
+  },
+  {
+    "role": "user",
+    "content": "how many cats do I have?",
+    "ts": "2026-04-09T19:45:35Z"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"I'm here, Kory! How can we dive into our conversation today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}",
+    "ts": "2026-04-09T19:45:41Z"
+  },
+  {
+    "role": "user",
+    "content": "I have 2",
+    "ts": "2026-04-09T19:45:58Z"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"I'm here and ready to chat, Kory. How can I assist you today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}",
+    "ts": "2026-04-09T19:46:03Z"
+  },
+  {
+    "role": "user",
+    "content": "what is your name?",
+    "ts": "2026-04-09T20:34:53Z"
+  },
+  {
+    "role": "assistant",
+    "content": "{\"response\": \"I am Atlas, your AI thinking partner. How can I assist you today?\", \"insight\": \"\", \"note\": \"\", \"has_insight\": false}",
+    "ts": "2026-04-09T20:34:58Z"
+  }
+]

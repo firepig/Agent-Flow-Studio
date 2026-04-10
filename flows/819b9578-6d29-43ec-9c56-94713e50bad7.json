@@ -1,0 +1,133 @@
+{
+  "id": "819b9578-6d29-43ec-9c56-94713e50bad7",
+  "name": "Shell Test Flow",
+  "description": "",
+  "flow_data": {
+    "drawflow": {
+      "Home": {
+        "data": {
+          "7": {
+            "id": 7,
+            "name": "start",
+            "data": {
+              "label": "Start",
+              "input_text": "hello world"
+            },
+            "class": "node-start",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header start\">\n      <span>\u25b6</span><span>Start</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Entry point</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {},
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "8",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 50,
+            "pos_y": 150
+          },
+          "8": {
+            "id": 8,
+            "name": "shell",
+            "data": {
+              "label": "Shell",
+              "command_template": "echo \"received: {{input}}\"",
+              "shell_type": "powershell",
+              "timeout": 30,
+              "working_directory": ""
+            },
+            "class": "node-shell",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header shell\">\n      <span>\u2328</span><span>Shell</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Run command</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "7",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "9",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 280,
+            "pos_y": 150
+          },
+          "9": {
+            "id": 9,
+            "name": "code",
+            "data": {
+              "label": "Code",
+              "code": "output = input_data.upper().strip()",
+              "unrestricted": false
+            },
+            "class": "node-code",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header code\">\n      <span>\ud83d\udcbb</span><span>Code</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Python</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "8",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "10",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 510,
+            "pos_y": 150
+          },
+          "10": {
+            "id": 10,
+            "name": "output",
+            "data": {
+              "label": "Output",
+              "output_name": "final"
+            },
+            "class": "node-output",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header output\">\n      <span>\ud83d\udce4</span><span>Output</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Result</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "9",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {},
+            "pos_x": 280,
+            "pos_y": 350
+          }
+        }
+      }
+    }
+  },
+  "created_at": "2026-03-30T16:43:08.130187+00:00",
+  "updated_at": "2026-03-30T16:43:08.130187+00:00"
+}

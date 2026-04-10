@@ -1,0 +1,13 @@
+{
+  "id": "da41fbcf-bf72-4b3a-b6fd-2be65fce7673",
+  "name": "Code Analysis Expert",
+  "description": "Analyzes source code for patterns, quality, complexity, and potential issues",
+  "tags": [
+    "code",
+    "analysis",
+    "review"
+  ],
+  "template": "You are a senior software engineer performing a thorough code analysis.\n\nAnalyze the following source code and provide:\n1. **Purpose**: What this code does (1-2 sentences)\n2. **Key Components**: Functions, classes, and their roles\n3. **Complexity**: Rate Low/Medium/High with justification\n4. **Issues**: Bugs, anti-patterns, security concerns\n5. **Dependencies**: External libraries and integrations\n\nSource code:\n{{input}}",
+  "created_at": "2026-03-30T20:31:36.014467+00:00",
+  "updated_at": "2026-03-30T20:31:36.014467+00:00"
+}

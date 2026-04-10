@@ -1,0 +1,13 @@
+{
+  "id": "d086b101-699d-4127-8f0f-d79d131e5a41",
+  "name": "Code Summarizer (Concise)",
+  "description": "Produces a brief 2-3 line summary of any code file",
+  "tags": [
+    "code",
+    "summary",
+    "concise"
+  ],
+  "template": "Summarize this code file in exactly 2-3 sentences. Focus on: what it does, what language/framework it uses, and its role in the larger system.\n\nCode:\n{{input}}",
+  "created_at": "2026-03-30T20:31:36.034111+00:00",
+  "updated_at": "2026-03-30T20:31:36.034111+00:00"
+}

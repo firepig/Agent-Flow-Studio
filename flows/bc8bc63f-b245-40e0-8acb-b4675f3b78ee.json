@@ -1,0 +1,306 @@
+{
+  "id": "bc8bc63f-b245-40e0-8acb-b4675f3b78ee",
+  "name": "Generated Flow",
+  "description": "",
+  "flow_data": {
+    "drawflow": {
+      "Home": {
+        "data": {
+          "2": {
+            "id": 2,
+            "name": "start",
+            "data": {
+              "label": "Start",
+              "input_text": "Best hot dog style"
+            },
+            "class": "node-start",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header start\">\n      <span>\u25b6</span><span>Start</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Entry point</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {},
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "3",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 104,
+            "pos_y": 200
+          },
+          "3": {
+            "id": 3,
+            "name": "http_request",
+            "data": {
+              "label": "Search Web",
+              "method": "GET",
+              "url_template": "https://searchengine.com?q={{input}}",
+              "headers_json": "{}",
+              "body_template": "",
+              "extract_path": "results",
+              "timeout": 30
+            },
+            "class": "node-http_request",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header http_request\">\n      <span>\ud83c\udf10</span><span>HTTP Request</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">GET</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "2",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "4",
+                    "output": "input_1"
+                  },
+                  {
+                    "node": "9",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 389,
+            "pos_y": 110
+          },
+          "4": {
+            "id": 4,
+            "name": "llm",
+            "data": {
+              "label": "Compile Report",
+              "provider": "openai",
+              "model": "gpt-3.5-turbo",
+              "system_prompt": "Generate a report based on the search results: {{input}}",
+              "user_prompt_template": "Based on your search query '{{input}}', here is a summary of the findings:",
+              "temperature": 0.7,
+              "max_tokens": 150
+            },
+            "class": "node-llm",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header llm\">\n      <span>\ud83e\udd16</span><span>LLM Call</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">AI Model</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "3",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "5",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 407,
+            "pos_y": 201
+          },
+          "5": {
+            "id": 5,
+            "name": "merge",
+            "data": {
+              "label": "Merge Results",
+              "merge_mode": "json_array",
+              "separator": ""
+            },
+            "class": "node-merge",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header merge\">\n      <span>\ud83d\udd17</span><span>Merge</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Combine inputs</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "4",
+                    "input": "output_1"
+                  }
+                ]
+              },
+              "input_2": {
+                "connections": []
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "6",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 704,
+            "pos_y": 150
+          },
+          "6": {
+            "id": 6,
+            "name": "file_write",
+            "data": {
+              "label": "Save Report",
+              "file_path": "report.txt",
+              "write_mode": "write"
+            },
+            "class": "node-file_write",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header file_write\">\n      <span>\ud83d\udcbe</span><span>File Write</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Write file</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "5",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "9",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 1000,
+            "pos_y": 100
+          },
+          "7": {
+            "id": 7,
+            "name": "react_agent",
+            "data": {
+              "label": "React Agent",
+              "goal": "analyze_results",
+              "provider": "openai",
+              "model": "gpt-3.5-turbo",
+              "system_prompt": "Analyzing the compiled report: {{input}}",
+              "temperature": 0.3,
+              "max_tokens": 2048,
+              "max_iterations": 3,
+              "allowed_tools": [
+                "tool1",
+                "tool2"
+              ]
+            },
+            "class": "node-react_agent",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header react_agent\">\n      <span>\ud83e\udde0</span><span>ReAct Agent</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Autonomous agent</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": []
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "8",
+                    "output": "input_1"
+                  },
+                  {
+                    "node": "9",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 702,
+            "pos_y": 250
+          },
+          "8": {
+            "id": 8,
+            "name": "output",
+            "data": {
+              "label": "Output",
+              "output_name": "result"
+            },
+            "class": "node-output",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header output\">\n      <span>\ud83d\udce4</span><span>Output</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Result</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "7",
+                    "input": "output_1"
+                  },
+                  {
+                    "node": "9",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {},
+            "pos_x": 1303,
+            "pos_y": 200
+          },
+          "9": {
+            "id": 9,
+            "name": "conversation_memory",
+            "data": {
+              "label": "Memory",
+              "memory_id": "",
+              "strategy": "full",
+              "max_messages": 50,
+              "role": "user",
+              "output_format": "json",
+              "persist_path": ""
+            },
+            "class": "node-conversation_memory",
+            "html": "<div class=\"df-node-content\">\n    <div class=\"df-node-header conversation_memory\">\n      <span>\ud83d\udcac</span><span>Memory</span>\n      <span class=\"df-node-status idle\"></span>\n    </div>\n    <div class=\"df-node-body\">\n      <div class=\"df-node-info\">Conversation state</div>\n    </div>\n  </div>",
+            "typenode": false,
+            "inputs": {
+              "input_1": {
+                "connections": [
+                  {
+                    "node": "3",
+                    "input": "output_1"
+                  },
+                  {
+                    "node": "7",
+                    "input": "output_1"
+                  },
+                  {
+                    "node": "6",
+                    "input": "output_1"
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "output_1": {
+                "connections": [
+                  {
+                    "node": "8",
+                    "output": "input_1"
+                  }
+                ]
+              }
+            },
+            "pos_x": 989,
+            "pos_y": 440
+          }
+        }
+      }
+    }
+  },
+  "created_at": "2026-03-30T19:31:40.183323+00:00",
+  "updated_at": "2026-03-30T19:36:25.600273+00:00"
+}

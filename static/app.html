@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #242736;
+      --border: #2e3145;
+      --text: #e4e4e7;
+      --text-muted: #8b8fa3;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --user-bg: #2d2f6b;
+      --assistant-bg: #1e2030;
+      --radius: 12px;
+    }
+    .light {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --surface2: #f0f1f3;
+      --border: #e2e4e9;
+      --text: #1a1d27;
+      --text-muted: #6b7080;
+      --user-bg: #e8e9ff;
+      --assistant-bg: #f0f1f3;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .app-header .app-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .app-header h1 { font-size: 18px; font-weight: 600; }
+    .app-header .app-desc { color: var(--text-muted); font-size: 13px; margin-left: auto; }
+
+    /* ── Chat Mode ── */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .chat-message {
+      max-width: 720px;
+      width: 85%;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      line-height: 1.6;
+      font-size: 14.5px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .chat-message.user {
+      align-self: flex-end;
+      background: var(--user-bg);
+      border-bottom-right-radius: 4px;
+    }
+    .chat-message.assistant {
+      align-self: flex-start;
+      background: var(--assistant-bg);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-message .msg-role {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .chat-message.assistant .msg-role { color: var(--accent); }
+    .chat-message .msg-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+    .typing-indicator {
+      align-self: flex-start;
+      padding: 14px 18px;
+      background: var(--assistant-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      border-bottom-left-radius: 4px;
+      display: none;
+    }
+    .typing-indicator.visible { display: flex; gap: 4px; align-items: center; }
+    .typing-dot {
+      width: 8px; height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* ── Input Bar ── */
+    .input-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+    .input-bar textarea {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
+      line-height: 1.4;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-bar textarea:focus { border-color: var(--accent); }
+    .input-bar textarea::placeholder { color: var(--text-muted); }
+    .input-bar button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .input-bar button:hover { background: var(--accent-hover); }
+    .input-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Form Mode ── */
+    .form-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 600px;
+    }
+    .form-card h2 { font-size: 20px; margin-bottom: 8px; }
+    .form-card .form-desc { color: var(--text-muted); margin-bottom: 24px; font-size: 14px; }
+    .form-field { margin-bottom: 20px; }
+    .form-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .form-field textarea, .form-field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    .form-field textarea { min-height: 100px; resize: vertical; }
+    .form-field textarea:focus, .form-field input:focus { border-color: var(--accent); }
+    .form-result {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--surface2);
+      border-radius: 10px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.6;
+      display: none;
+    }
+    .form-result.visible { display: block; }
+    .form-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .form-btn:hover { background: var(--accent-hover); }
+    .form-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .powered-by {
+      text-align: center;
+      padding: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    .powered-by a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="app-header">
+    <div class="app-icon" id="app-icon">⚡</div>
+    <div>
+      <h1 id="app-title">Loading...</h1>
+    </div>
+    <div class="app-desc" id="app-desc"></div>
+  </div>
+
+  <!-- Chat mode -->
+  <div id="chat-view" style="display:none; flex:1; flex-direction:column;">
+    <div class="chat-container" id="chat-messages"></div>
+    <div class="typing-indicator" id="typing">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+    <div class="input-bar">
+      <textarea id="chat-input" placeholder="Type a message..." rows="1"></textarea>
+      <button id="chat-send" onclick="sendChatMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- Form mode -->
+  <div id="form-view" style="display:none; flex:1;">
+    <div class="form-container">
+      <div class="form-card">
+        <h2 id="form-title">Input</h2>
+        <div class="form-desc" id="form-desc"></div>
+        <div id="form-fields-container"></div>
+        <button class="form-btn" id="form-submit" onclick="submitForm()">Run</button>
+        <div id="form-results-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="powered-by">
+    Powered by <a href="/" target="_blank">Agent Flow Studio</a>
+  </div>
+
+<script>
+const flowId = window.location.pathname.split('/app/')[1];
+let config = null;
+let isRunning = false;
+
+async function init() {
+  try {
+    const resp = await fetch(`/api/app/${flowId}/config`);
+    config = await resp.json();
+  } catch (e) {
+    document.getElementById('app-title').textContent = 'Error loading app';
+    return;
+  }
+
+  const iface = config.interface;
+  document.title = iface.title || config.flow_name;
+  document.getElementById('app-title').textContent = iface.title || config.flow_name;
+  document.getElementById('app-desc').textContent = iface.description || '';
+
+  if (iface.theme === 'light') document.body.classList.add('light');
+  if (iface.accent_color) document.documentElement.style.setProperty('--accent', iface.accent_color);
+
+  if (iface.mode === 'chat') {
+    document.getElementById('chat-view').style.display = 'flex';
+    loadChatHistory(config.chat_history);
+    setupChatInput();
+  } else {
+    document.getElementById('form-view').style.display = 'flex';
+    document.getElementById('form-title').textContent = iface.title || 'Input';
+    document.getElementById('form-desc').textContent = iface.description || '';
+    buildFormFields(iface.fields || []);
+    buildOutputPlaceholders(iface.output_fields || []);
+  }
+}
+
+function loadChatHistory(history) {
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = '';
+  if (!history || !history.length) {
+    addChatBubble('assistant', 'Hello! How can I help you today?');
+    return;
+  }
+  for (const msg of history) {
+    const role = msg.role || 'user';
+    let content = msg.content || '';
+    if (role === 'assistant') {
+      content = extractCleanResponse(content);
+    }
+    addChatBubble(role, content);
+  }
+  scrollToBottom();
+}
+
+function extractCleanResponse(text) {
+  if (!text) return '';
+  // If JSON with a "response" key, use that
+  try {
+    const data = JSON.parse(text);
+    if (typeof data === 'object' && data !== null) {
+      if (data.response) return String(data.response).trim();
+      if (data.output) return String(data.output).trim();
+      if (data.result) return String(data.result).trim();
+    }
+  } catch {}
+  // Strip common XML-style wrapper tags if present
+  const tagMatch = text.match(/<(?:response|output|result)>([\s\S]*?)<\/(?:response|output|result)>/);
+  if (tagMatch) return tagMatch[1].trim();
+  // Strip metadata bracket lines [Key: value]
+  let cleaned = text.replace(/\n*\[[A-Z][^\]]{0,80}\]/g, '');
+  return cleaned.trim();
+}
+
+function addChatBubble(role, content, meta) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-message ${role}`;
+  const roleName = role === 'user' ? 'You' : (config?.interface?.title || 'Assistant');
+  let html = `<div class="msg-role">${roleName}</div>${escapeHtml(content)}`;
+  if (meta) html += `<div class="msg-meta">${escapeHtml(meta)}</div>`;
+  div.innerHTML = html;
+  container.appendChild(div);
+  scrollToBottom();
+}
+
+function scrollToBottom() {
+  const container = document.getElementById('chat-messages');
+  requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+}
+
+function setupChatInput() {
+  const input = document.getElementById('chat-input');
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+}
+
+async function sendChatMessage() {
+  if (isRunning) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  addChatBubble('user', text);
+
+  isRunning = true;
+  document.getElementById('chat-send').disabled = true;
+  document.getElementById('typing').classList.add('visible');
+
+  try {
+    const resp = await fetch(`/api/app/${flowId}/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: text })
+    });
+    const result = await resp.json();
+
+    document.getElementById('typing').classList.remove('visible');
+
+    if (result.ok) {
+      const response = extractCleanResponse(result.response || '');
+      addChatBubble('assistant', response);
+    } else {
+      addChatBubble('assistant', 'Error: ' + (result.error || 'Something went wrong'));
+    }
+  } catch (err) {
+    document.getElementById('typing').classList.remove('visible');
+    addChatBubble('assistant', 'Connection error: ' + err.message);
+  }
+
+  isRunning = false;
+  document.getElementById('chat-send').disabled = false;
+}
+
+function buildFormFields(fields) {
+  const container = document.getElementById('form-fields-container');
+  container.innerHTML = '';
+  if (!fields || fields.length === 0) {
+    container.innerHTML = `<div class="form-field"><label>Input</label><textarea id="form-input" placeholder="Enter your input..." data-field-name="input"></textarea></div>`;
+    return;
+  }
+  for (const f of fields) {
+    const div = document.createElement('div');
+    div.className = 'form-field';
+    const label = f.label || f.name || 'Input';
+    const name = f.name || 'input';
+    let input = '';
+    switch (f.type) {
+      case 'textarea':
+        input = `<textarea data-field-name="${escapeHtml(name)}" placeholder="Enter ${escapeHtml(label)}..."></textarea>`;
+        break;
+      case 'number':
+        input = `<input type="number" data-field-name="${escapeHtml(name)}" placeholder="0" />`;
+        break;
+      case 'select': {
+        const opts = (f.options || '').split(',').map(o => o.trim()).filter(Boolean);
+        input = `<select data-field-name="${escapeHtml(name)}">${opts.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}</select>`;
+        break;
+      }
+      default:
+        input = `<input type="text" data-field-name="${escapeHtml(name)}" placeholder="Enter ${escapeHtml(label)}..." />`;
+    }
+    div.innerHTML = `<label>${escapeHtml(label)}</label>${input}`;
+    container.appendChild(div);
+  }
+}
+
+function buildOutputPlaceholders(outputFields) {
+  const container = document.getElementById('form-results-container');
+  container.innerHTML = '';
+  if (!outputFields || outputFields.length === 0) {
+    container.innerHTML = `<div class="form-result" id="form-result-main"></div>`;
+    return;
+  }
+  for (const o of outputFields) {
+    const div = document.createElement('div');
+    div.className = 'form-result';
+    div.id = 'form-result-' + (o.node_key || 'main');
+    if (o.label) {
+      div.innerHTML = `<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:6px">${escapeHtml(o.label)}</div><div class="result-content"></div>`;
+    }
+    container.appendChild(div);
+  }
+}
+
+function collectFormInputs() {
+  const fields = document.querySelectorAll('[data-field-name]');
+  if (fields.length === 1 && fields[0].dataset.fieldName === 'input') {
+    return { input: fields[0].value.trim(), fields: null };
+  }
+  const data = {};
+  let combined = [];
+  fields.forEach(el => {
+    const val = el.value.trim();
+    data[el.dataset.fieldName] = val;
+    combined.push(val);
+  });
+  return { input: JSON.stringify(data), fields: data };
+}
+
+async function submitForm() {
+  if (isRunning) return;
+  const { input, fields: fieldData } = collectFormInputs();
+  if (!input) return;
+
+  isRunning = true;
+  document.getElementById('form-submit').disabled = true;
+  document.getElementById('form-submit').textContent = 'Running...';
+  document.querySelectorAll('.form-result').forEach(el => { el.classList.remove('visible'); el.querySelector('.result-content') && (el.querySelector('.result-content').textContent = ''); });
+
+  try {
+    const body = { input };
+    if (fieldData) body.fields = fieldData;
+    const resp = await fetch(`/api/app/${flowId}/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const result = await resp.json();
+
+    if (result.ok) {
+      const outputFields = (config.interface.output_fields || []);
+      if (outputFields.length > 0 && result.results) {
+        for (const o of outputFields) {
+          const el = document.getElementById('form-result-' + (o.node_key || 'main'));
+          if (el) {
+            const contentEl = el.querySelector('.result-content') || el;
+            contentEl.textContent = result.results[o.node_key] || result.response || '(empty)';
+            el.classList.add('visible');
+          }
+        }
+      } else {
+        const el = document.getElementById('form-result-main');
+        if (el) {
+          el.textContent = result.response || '(empty output)';
+          el.classList.add('visible');
+        }
+      }
+    } else {
+      const el = document.querySelector('.form-result') || document.getElementById('form-result-main');
+      if (el) {
+        el.textContent = 'Error: ' + (result.error || 'Unknown');
+        el.classList.add('visible');
+      }
+    }
+  } catch (err) {
+    const el = document.querySelector('.form-result');
+    if (el) { el.textContent = 'Error: ' + err.message; el.classList.add('visible'); }
+  }
+
+  isRunning = false;
+  document.getElementById('form-submit').disabled = false;
+  document.getElementById('form-submit').textContent = 'Run';
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+init();
+</script>
+</body>
+</html>

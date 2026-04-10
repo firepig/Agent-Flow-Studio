@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Flow Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- TOOLBAR -->
+  <div id="toolbar">
+    <div class="toolbar-left">
+      <span class="app-logo">⚡ Agent Flow Studio</span>
+      <input id="flow-name" type="text" value="Untitled Flow" />
+    </div>
+    <div class="toolbar-center">
+      <button id="btn-new" title="New Flow">New</button>
+      <button id="btn-save" title="Save Flow">Save</button>
+      <button id="btn-load" title="Load Flow">Flows</button>
+      <div class="toolbar-divider"></div>
+      <button id="btn-run" class="btn-primary" title="Run Flow">▶ Run</button>
+      <button id="btn-debug" title="Debug (Step-Through)">🔍 Debug</button>
+      <button id="btn-stop" class="btn-danger" title="Stop" disabled>■ Stop</button>
+      <div class="toolbar-divider"></div>
+      <button id="btn-nl-builder" title="Generate flow from description">✨ AI Build</button>
+      <button id="btn-prompt-library" title="Prompt Library">📚 Prompts</button>
+      <button id="btn-variables" title="Variable Inspector">🔗 Vars</button>
+      <button id="btn-agent-ide" title="Agent IDE — persona, memory, vectors">🧠 Agent IDE</button>
+      <div class="toolbar-divider"></div>
+      <button id="btn-export" title="Export as ZIP">Export</button>
+    </div>
+    <div class="toolbar-right">
+      <button id="btn-settings" title="Settings">⚙ Settings</button>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div id="main-container">
+    <!-- LEFT SIDEBAR: NODE PALETTE -->
+    <div id="node-palette">
+      <h3>Nodes</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" data-type="start" draggable="true">
+          <span class="palette-icon" style="background:#3fb950">▶</span>
+          <span>Start</span>
+        </div>
+        <div class="palette-node" data-type="llm" draggable="true">
+          <span class="palette-icon" style="background:#58a6ff">🤖</span>
+          <span>LLM Call</span>
+        </div>
+        <div class="palette-node" data-type="prompt_template" draggable="true">
+          <span class="palette-icon" style="background:#bc8cff">📝</span>
+          <span>Template</span>
+        </div>
+        <div class="palette-node" data-type="conditional" draggable="true">
+          <span class="palette-icon" style="background:#d29922">🔀</span>
+          <span>Condition</span>
+        </div>
+        <div class="palette-node" data-type="code" draggable="true">
+          <span class="palette-icon" style="background:#f0883e">💻</span>
+          <span>Code</span>
+        </div>
+        <div class="palette-node" data-type="merge" draggable="true">
+          <span class="palette-icon" style="background:#39d2c0">🔗</span>
+          <span>Merge</span>
+        </div>
+        <div class="palette-node" data-type="output" draggable="true">
+          <span class="palette-icon" style="background:#f85149">📤</span>
+          <span>Output</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Scripts &amp; I/O</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" data-type="shell" draggable="true">
+          <span class="palette-icon" style="background:#0ea5e9">⌨</span>
+          <span>Shell</span>
+        </div>
+        <div class="palette-node" data-type="http_request" draggable="true">
+          <span class="palette-icon" style="background:#8b5cf6">🌐</span>
+          <span>HTTP Request</span>
+        </div>
+        <div class="palette-node" data-type="file_read" draggable="true">
+          <span class="palette-icon" style="background:#84cc16">📂</span>
+          <span>File Read</span>
+        </div>
+        <div class="palette-node" data-type="file_write" draggable="true">
+          <span class="palette-icon" style="background:#ec4899">💾</span>
+          <span>File Write</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Flow Control</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" data-type="loop" draggable="true">
+          <span class="palette-icon" style="background:#f59e0b">🔁</span>
+          <span>Loop</span>
+        </div>
+        <div class="palette-node" data-type="hitl" draggable="true">
+          <span class="palette-icon" style="background:#06b6d4">👤</span>
+          <span>Human Review</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Agents</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" data-type="react_agent" draggable="true">
+          <span class="palette-icon" style="background:#dc2626">🧠</span>
+          <span>ReAct Agent</span>
+        </div>
+        <div class="palette-node" data-type="conversation_memory" draggable="true">
+          <span class="palette-icon" style="background:#7c3aed">💬</span>
+          <span>Memory</span>
+        </div>
+        <div class="palette-node" data-type="map_reduce" draggable="true">
+          <span class="palette-icon" style="background:#0891b2">⚡</span>
+          <span>Map-Reduce</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Interface</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" draggable="true" data-type="ui_interface">
+          <span class="palette-icon" style="background:#6366f1">🖥️</span>
+          <span>Interface</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Knowledge</h3>
+      <div class="palette-nodes">
+        <div class="palette-node" draggable="true" data-type="embed">
+          <span class="palette-icon" style="background:#14b8a6">🔢</span>
+          <span>Embed</span>
+        </div>
+        <div class="palette-node" draggable="true" data-type="vector_store">
+          <span class="palette-icon" style="background:#f59e0b">🗄️</span>
+          <span>Vector Store</span>
+        </div>
+        <div class="palette-node" draggable="true" data-type="rag_retrieve">
+          <span class="palette-icon" style="background:#ef4444">🎯</span>
+          <span>RAG Retrieve</span>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">My Sub-Flows</h3>
+      <div id="subflow-palette" class="palette-nodes">
+        <div class="palette-empty">No sub-flows yet</div>
+      </div>
+    </div>
+
+    <!-- CENTER: DRAWFLOW CANVAS -->
+    <div id="drawflow"></div>
+
+    <!-- RIGHT SIDEBAR: PROPERTIES -->
+    <div id="properties-panel">
+      <div class="resize-handle-left" id="props-resize-handle"></div>
+      <h3>Properties</h3>
+      <div id="properties-content">
+        <div class="properties-empty">Select a node to edit its properties</div>
+      </div>
+    </div>
+
+    <!-- VARIABLE INSPECTOR (toggleable) -->
+    <div id="variable-inspector" class="hidden">
+      <div class="vi-header">
+        <h3>Variables</h3>
+        <button class="vi-close" onclick="toggleVariableInspector()">✕</button>
+        <button class="vi-refresh" onclick="refreshVariableInspector()" title="Refresh">↻</button>
+      </div>
+      <div id="variable-list"></div>
+    </div>
+  </div>
+
+  <!-- DEBUG INSPECTOR -->
+  <div id="debug-inspector" class="hidden">
+    <div class="debug-inspector-header">
+      <h3>🔍 Debug Inspector</h3>
+      <div id="debug-controls" style="display:none">
+        <button onclick="debugStep()" class="btn-debug-ctrl" title="Step to next node">⏭ Step</button>
+        <button onclick="debugContinue()" class="btn-debug-ctrl" title="Continue to next breakpoint">▶ Continue</button>
+        <button onclick="debugEditAndStep()" class="btn-debug-ctrl" title="Apply edits and step">✏ Edit & Step</button>
+        <button onclick="debugStop()" class="btn-debug-ctrl btn-danger-sm" title="Stop debug">■ Stop</button>
+      </div>
+    </div>
+    <div class="debug-inspector-body">
+      <div class="debug-info-row">
+        <span class="debug-label">Node:</span>
+        <span id="debug-node-name">—</span>
+        <span class="debug-type-badge" id="debug-node-type">—</span>
+      </div>
+      <label class="debug-label">Input Data (editable):</label>
+      <textarea id="debug-input-data" class="mono" rows="8"></textarea>
+    </div>
+  </div>
+
+  <!-- BOTTOM PANEL: EXECUTION LOG -->
+  <div id="execution-panel" class="collapsed">
+    <div class="resize-handle-top" id="exec-resize-handle"></div>
+    <div id="execution-header" onclick="toggleExecutionPanel()">
+      <span>Execution Log</span>
+      <span id="execution-toggle">▲</span>
+    </div>
+    <div id="execution-content">
+      <div id="execution-log"></div>
+      <div id="execution-results"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('settings-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>OpenAI API Key</label>
+          <input type="password" id="setting-openai-key" placeholder="sk-..." autocomplete="off" />
+          <p id="setting-openai-key-hint" class="settings-key-hint" hidden></p>
+        </div>
+        <div class="form-group">
+          <label>Anthropic API Key</label>
+          <input type="password" id="setting-anthropic-key" placeholder="sk-ant-..." autocomplete="off" />
+          <p id="setting-anthropic-key-hint" class="settings-key-hint" hidden></p>
+        </div>
+        <div class="form-group">
+          <label>Ollama Base URL</label>
+          <input type="text" id="setting-ollama-url" value="http://localhost:11434" />
+        </div>
+        <div class="form-group">
+          <label>Default Provider</label>
+          <select id="setting-default-provider" onchange="onProviderChange()">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="ollama">Ollama</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Default Model</label>
+          <select id="setting-default-model-select" onchange="onModelSelectChange()"></select>
+          <input type="text" id="setting-default-model" style="display:none;margin-top:6px" placeholder="Enter model name..." />
+        </div>
+        <button id="btn-save-settings" class="btn-primary" onclick="saveSettings()">Save Settings</button>
+        <button id="btn-test-connection" onclick="testConnection()">Test Connection</button>
+        <div id="settings-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FLOW MANAGER -->
+  <div id="flows-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('flows-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Saved Flows</h2>
+        <button class="modal-close" onclick="closeModal('flows-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="flows-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HITL APPROVAL -->
+  <div id="hitl-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>🔔 Human Review Required</h2>
+      </div>
+      <div class="modal-body">
+        <div id="hitl-prompt" class="hitl-prompt"></div>
+        <div class="form-group">
+          <label>Data</label>
+          <textarea id="hitl-data" class="mono" rows="10" readonly></textarea>
+        </div>
+        <div class="hitl-actions">
+          <button class="btn-primary hitl-btn" onclick="submitHitl('approve')">✓ Approve</button>
+          <button class="btn-danger hitl-btn" onclick="submitHitl('reject')">✗ Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT MENU (right-click on node) -->
+  <div id="context-menu" class="hidden">
+    <div class="ctx-item" onclick="contextTestNode()">🧪 Test Node</div>
+    <div class="ctx-item" onclick="contextToggleBreakpoint()">🔴 Toggle Breakpoint</div>
+    <div class="ctx-item" onclick="saveAsSubflow()">📦 Save as Sub-Flow</div>
+  </div>
+
+  <!-- MODAL: TEST NODE -->
+  <div id="test-node-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('test-node-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>🧪 Test Node</h2>
+        <button class="modal-close" onclick="closeModal('test-node-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label id="test-node-type">Node</label>
+        </div>
+        <div class="form-group">
+          <label>Input Text</label>
+          <textarea id="test-node-input" placeholder="Enter sample input to test this node with..." rows="5"></textarea>
+        </div>
+        <button class="btn-primary" onclick="runTestNode()">▶ Run Test</button>
+        <div class="form-group" style="margin-top:16px">
+          <label>Output</label>
+          <pre id="test-node-output" class="test-output"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NL FLOW BUILDER -->
+  <div id="nl-builder-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('nl-builder-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>✨ AI Flow Builder</h2>
+        <button class="modal-close" onclick="closeModal('nl-builder-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Describe what your flow should do</label>
+          <textarea id="nl-description" rows="5" placeholder="Example: Read a file, summarize each paragraph with an LLM, then write the summaries to output.txt"></textarea>
+        </div>
+        <button class="btn-primary" onclick="generateFlowFromDescription()">✨ Generate Flow</button>
+        <div id="nl-status" style="margin-top:12px;font-size:13px;min-height:20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AGENT IDE -->
+  <div id="agent-ide-modal" class="modal hidden modal-agent-ide">
+    <div class="modal-backdrop" onclick="closeModal('agent-ide-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>🧠 Agent IDE</h2>
+        <button class="modal-close" onclick="closeModal('agent-ide-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">
+          Everything that shapes the agent outside the node graph — in plain language. Edit JSON where marked; changes write to <code style="font-size:11px">assistant/*.json</code> on disk.
+        </p>
+        <div class="agent-ide-tabs">
+          <button type="button" class="active" data-agent-tab="overview">Overview</button>
+          <button type="button" data-agent-tab="persona">Persona (JSON)</button>
+          <button type="button" data-agent-tab="memory">Core memory (JSON)</button>
+          <button type="button" data-agent-tab="chat">Short-term chat</button>
+          <button type="button" data-agent-tab="actions">Actions</button>
+        </div>
+        <div id="agent-ide-tab-overview" class="agent-ide-panel">
+          <div class="agent-ide-toolbar">
+            <button type="button" class="btn-primary" onclick="refreshAgentIdeOverview()">↻ Refresh overview</button>
+            <span class="agent-ide-status" id="agent-ide-overview-status"></span>
+          </div>
+          <div id="agent-ide-overview-cards"></div>
+        </div>
+        <div id="agent-ide-tab-persona" class="agent-ide-panel hidden">
+          <div class="agent-ide-toolbar">
+            <button type="button" class="btn-primary" onclick="saveAgentIdeDocument('persona')">💾 Save persona.json</button>
+            <span class="agent-ide-status" id="agent-ide-persona-status"></span>
+          </div>
+          <textarea id="agent-ide-json-persona" class="mono" spellcheck="false"></textarea>
+        </div>
+        <div id="agent-ide-tab-memory" class="agent-ide-panel hidden">
+          <div class="agent-ide-toolbar">
+            <button type="button" class="btn-primary" onclick="saveAgentIdeDocument('memory_layers')">💾 Save memory_layers.json</button>
+            <span class="agent-ide-status" id="agent-ide-memory-status"></span>
+          </div>
+          <textarea id="agent-ide-json-memory" class="mono" spellcheck="false"></textarea>
+        </div>
+        <div id="agent-ide-tab-chat" class="agent-ide-panel hidden">
+          <div class="agent-ide-toolbar">
+            <button type="button" class="btn-primary" onclick="refreshAgentIdeChat()">↻ Reload chat file</button>
+            <span class="agent-ide-status" id="agent-ide-chat-status"></span>
+          </div>
+          <div id="agent-ide-chat-list" class="agent-ide-chat-list"></div>
+        </div>
+        <div id="agent-ide-tab-actions" class="agent-ide-panel hidden">
+          <div class="agent-ide-card">
+            <h4>Consolidate memory</h4>
+            <p class="agent-ide-sub">POST /api/memory/consolidate</p>
+            <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.45">
+              Sifts <code>chat_history.json</code> via the LLM and promotes durable rows into <code>memory_layers.json</code>, persona notes, and insight vectors (see server).
+            </p>
+            <button type="button" class="btn-primary" onclick="runAgentIdeConsolidate(false)">Run consolidation</button>
+            <button type="button" onclick="runAgentIdeConsolidate(true)">Dry run (preview only)</button>
+            <pre id="agent-ide-consolidate-result" style="margin-top:12px;max-height:220px;overflow:auto"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROMPT LIBRARY -->
+  <div id="prompt-library-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('prompt-library-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>📚 Prompt Library</h2>
+        <button class="modal-close" onclick="closeModal('prompt-library-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="prompt-list"></div>
+        <div class="prompt-add-section">
+          <h3 style="margin-top:16px;margin-bottom:12px;font-size:13px;color:var(--text-secondary)">ADD NEW PROMPT</h3>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="new-prompt-name" placeholder="e.g. Code Review Prompt" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="new-prompt-description" placeholder="What does this prompt do?" />
+          </div>
+          <div class="form-group">
+            <label>Tags (comma-separated)</label>
+            <input type="text" id="new-prompt-tags" placeholder="code, review, analysis" />
+          </div>
+          <div class="form-group">
+            <label>Template</label>
+            <textarea id="new-prompt-template" rows="5" class="mono" placeholder="You are a code reviewer. Analyze the following code for: ...&#10;&#10;{{input}}"></textarea>
+          </div>
+          <button class="btn-primary" onclick="savePromptToLibrary()">💾 Save Prompt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
