@@ -1,0 +1,86 @@
+{
+  "id": "workspace-inventory-report",
+  "name": "Workspace Inventory Report",
+  "description": "Inspect a folder, summarize file extensions, and write a lightweight report.",
+  "complexity": "simple",
+  "use_case": "Demonstrates shell execution, Python transforms, merge, and file output.",
+  "modules": ["start", "shell", "code", "merge", "file_write", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "start",
+        "x": 80,
+        "y": 220,
+        "data": {
+          "label": "Workspace Root",
+          "input_text": "."
+        }
+      },
+      {
+        "id": "2",
+        "type": "shell",
+        "x": 340,
+        "y": 220,
+        "data": {
+          "label": "List Extensions",
+          "command_template": "Get-ChildItem -Path \"{{input}}\" -Recurse -File | Select-Object -ExpandProperty Extension",
+          "shell_type": "powershell",
+          "timeout": 30,
+          "working_directory": ""
+        }
+      },
+      {
+        "id": "3",
+        "type": "code",
+        "x": 620,
+        "y": 220,
+        "data": {
+          "label": "Summarize Extensions",
+          "code": "lines = [line.strip() or '[no extension]' for line in input_data.splitlines() if line.strip() or line == '']\\ncounts = {}\\nfor ext in lines:\\n    counts[ext] = counts.get(ext, 0) + 1\\nordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:12]\\nout = ['Extension summary:']\\nfor ext, count in ordered:\\n    out.append(f'{ext}: {count}')\\noutput = '\\n'.join(out)",
+          "unrestricted": false
+        }
+      },
+      {
+        "id": "4",
+        "type": "merge",
+        "x": 900,
+        "y": 220,
+        "data": {
+          "label": "Build Report",
+          "merge_mode": "concatenate",
+          "separator": "\\n\\n---\\n\\n"
+        }
+      },
+      {
+        "id": "5",
+        "type": "file_write",
+        "x": 1160,
+        "y": 220,
+        "data": {
+          "label": "Write Report",
+          "file_path": "output/workspace-inventory.txt",
+          "write_mode": "write"
+        }
+      },
+      {
+        "id": "6",
+        "type": "output",
+        "x": 1400,
+        "y": 220,
+        "data": {
+          "label": "Inventory Report",
+          "output_name": "inventory_report"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "1", "from_output": "output_1", "to_node": "2", "to_input": "input_1" },
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" },
+      { "from_node": "1", "from_output": "output_1", "to_node": "4", "to_input": "input_1" },
+      { "from_node": "3", "from_output": "output_1", "to_node": "4", "to_input": "input_2" },
+      { "from_node": "4", "from_output": "output_1", "to_node": "5", "to_input": "input_1" },
+      { "from_node": "5", "from_output": "output_1", "to_node": "6", "to_input": "input_1" }
+    ]
+  }
+}

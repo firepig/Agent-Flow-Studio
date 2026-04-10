@@ -1,0 +1,85 @@
+{
+  "id": "support-triage-router",
+  "name": "Support Triage Router",
+  "description": "Classify an inbound support request into self-serve guidance or an escalation queue.",
+  "complexity": "simple",
+  "use_case": "Good first example for prompt templates, LLM routing, and conditional branches.",
+  "modules": ["start", "prompt_template", "llm", "conditional", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "start",
+        "x": 80,
+        "y": 200,
+        "data": {
+          "label": "Incoming Request",
+          "input_text": "My login link expired and I need access before a client demo in two hours."
+        }
+      },
+      {
+        "id": "2",
+        "type": "prompt_template",
+        "x": 340,
+        "y": 200,
+        "data": {
+          "label": "Build Triage Prompt",
+          "template": "Classify the support request below.\\n\\nReturn only one of these formats:\\n- ESCALATE: <short reason>\\n- SELF_SERVE: <short guidance>\\n\\nEscalate for security, billing, customer-blocking outages, or requests with tight deadlines.\\n\\nRequest:\\n{{input}}"
+        }
+      },
+      {
+        "id": "3",
+        "type": "llm",
+        "x": 640,
+        "y": 200,
+        "data": {
+          "label": "Triage Model",
+          "provider": "",
+          "model": "",
+          "system_prompt": "You are a support triage assistant. Be decisive and concise.",
+          "user_prompt_template": "{{input}}",
+          "temperature": 0.1,
+          "max_tokens": 180
+        }
+      },
+      {
+        "id": "4",
+        "type": "conditional",
+        "x": 920,
+        "y": 200,
+        "data": {
+          "label": "Escalate?",
+          "condition_type": "starts_with",
+          "condition_value": "ESCALATE"
+        }
+      },
+      {
+        "id": "5",
+        "type": "output",
+        "x": 1180,
+        "y": 120,
+        "data": {
+          "label": "Escalate Queue",
+          "output_name": "escalate_ticket"
+        }
+      },
+      {
+        "id": "6",
+        "type": "output",
+        "x": 1180,
+        "y": 280,
+        "data": {
+          "label": "Self-Serve Reply",
+          "output_name": "self_serve_reply"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "1", "from_output": "output_1", "to_node": "2", "to_input": "input_1" },
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" },
+      { "from_node": "3", "from_output": "output_1", "to_node": "4", "to_input": "input_1" },
+      { "from_node": "4", "from_output": "output_1", "to_node": "5", "to_input": "input_1" },
+      { "from_node": "4", "from_output": "output_2", "to_node": "6", "to_input": "input_1" }
+    ]
+  }
+}

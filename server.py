@@ -23,6 +23,7 @@ _BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(_BASE_DIR / ".env")
 
 FLOWS_DIR = Path("flows")
+EXAMPLES_DIR = _BASE_DIR / "examples" / "flows"
 SETTINGS_FILE = _BASE_DIR / "settings.json"
 
 pending_executions: dict[str, dict] = {}
@@ -81,6 +82,39 @@ async def list_flows():
         except (json.JSONDecodeError, KeyError):
             continue
     return flows
+
+
+@app.get("/api/examples")
+async def list_examples():
+    examples = []
+    if not EXAMPLES_DIR.exists():
+        return examples
+
+    for fp in sorted(EXAMPLES_DIR.glob("*.json")):
+        try:
+            data = json.loads(fp.read_text(encoding="utf-8"))
+            graph = data.get("flow_graph", {})
+            examples.append({
+                "id": data.get("id", fp.stem),
+                "name": data.get("name", fp.stem),
+                "description": data.get("description", ""),
+                "complexity": data.get("complexity", "simple"),
+                "modules": data.get("modules", []),
+                "use_case": data.get("use_case", ""),
+                "node_count": len(graph.get("nodes", [])),
+            })
+        except (json.JSONDecodeError, OSError, AttributeError):
+            continue
+
+    return examples
+
+
+@app.get("/api/examples/{example_id}")
+async def get_example(example_id: str):
+    fp = EXAMPLES_DIR / f"{example_id}.json"
+    if not fp.exists():
+        raise HTTPException(404, "Example not found")
+    return json.loads(fp.read_text(encoding="utf-8"))
 
 
 @app.get("/api/flows/{flow_id}")

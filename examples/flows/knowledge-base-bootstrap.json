@@ -1,0 +1,64 @@
+{
+  "id": "knowledge-base-bootstrap",
+  "name": "Knowledge Base Bootstrap",
+  "description": "Store a set of notes into a local vector collection and verify the collection count.",
+  "complexity": "simple",
+  "use_case": "First step in a local RAG workflow. Run this before trying the retriever example.",
+  "modules": ["start", "embed", "vector_store", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "start",
+        "x": 80,
+        "y": 220,
+        "data": {
+          "label": "Seed Notes",
+          "input_text": "Quarterly onboarding checklist:\\n- Review access permissions every quarter.\\n- Rotate shared credentials after major staffing changes.\\n- Update the incident contact sheet after each drill.\\n- Store vendor renewal notes next to the operating runbook."
+        }
+      },
+      {
+        "id": "2",
+        "type": "embed",
+        "x": 380,
+        "y": 220,
+        "data": {
+          "label": "Store Notes",
+          "collection": "example_notes",
+          "operation": "embed_and_store",
+          "chunk_size": 40,
+          "chunk_overlap": 8,
+          "metadata_json": "{\"source\": \"knowledge-base-bootstrap\"}"
+        }
+      },
+      {
+        "id": "3",
+        "type": "vector_store",
+        "x": 700,
+        "y": 220,
+        "data": {
+          "label": "Count Vectors",
+          "collection": "example_notes",
+          "operation": "count",
+          "top_k": 5,
+          "threshold": 0
+        }
+      },
+      {
+        "id": "4",
+        "type": "output",
+        "x": 980,
+        "y": 220,
+        "data": {
+          "label": "Store Status",
+          "output_name": "store_status"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "1", "from_output": "output_1", "to_node": "2", "to_input": "input_1" },
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" },
+      { "from_node": "3", "from_output": "output_1", "to_node": "4", "to_input": "input_1" }
+    ]
+  }
+}

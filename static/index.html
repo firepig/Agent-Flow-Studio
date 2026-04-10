@@ -21,6 +21,7 @@
       <button id="btn-new" title="New Flow">New</button>
       <button id="btn-save" title="Save Flow">Save</button>
       <button id="btn-load" title="Load Flow">Flows</button>
+      <button id="btn-examples" title="Load Example Flow">Examples</button>
       <div class="toolbar-divider"></div>
       <button id="btn-run" class="btn-primary" title="Run Flow">▶ Run</button>
       <button id="btn-debug" title="Debug (Step-Through)">🔍 Debug</button>
@@ -257,6 +258,23 @@
       </div>
       <div class="modal-body">
         <div id="flows-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EXAMPLE LIBRARY -->
+  <div id="examples-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('examples-modal')"></div>
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Example Flows</h2>
+        <button class="modal-close" onclick="closeModal('examples-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.45">
+          Curated demos live in the repo under <code style="font-size:11px">examples/flows</code>. Loading one places it on the canvas as a new unsaved local flow.
+        </p>
+        <div id="examples-list"></div>
       </div>
     </div>
   </div>

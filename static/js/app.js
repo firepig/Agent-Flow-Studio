@@ -437,6 +437,13 @@ function initToolbar() {
     loadFlowsList();
     openModal('flows-modal');
   });
+  const examplesBtn = document.getElementById('btn-examples');
+  if (examplesBtn) {
+    examplesBtn.addEventListener('click', () => {
+      loadExamplesList();
+      openModal('examples-modal');
+    });
+  }
   document.getElementById('btn-run').addEventListener('click', runFlow);
   document.getElementById('btn-stop').addEventListener('click', stopExecution);
   document.getElementById('btn-export').addEventListener('click', exportFlow);
@@ -1580,6 +1587,95 @@ function newFlow() {
   showToast('New flow created', 'info');
 }
 
+function importFlowGraph(graph, name) {
+  editor.clear();
+  currentFlowId = null;
+
+  const idMap = {};
+  for (const n of (graph.nodes || [])) {
+    const type = n.type;
+    if (!nodeTemplates[type]) continue;
+    const io = nodeIO[type] || { inputs: 1, outputs: 1 };
+    const data = { ...JSON.parse(JSON.stringify(defaultNodeData[type] || {})), ...(n.data || {}) };
+    const nid = editor.addNode(
+      type,
+      io.inputs,
+      io.outputs,
+      n.x || 100,
+      n.y || 200,
+      'node-' + type,
+      data,
+      nodeTemplates[type]
+    );
+    idMap[n.id] = nid;
+  }
+
+  for (const c of (graph.connections || [])) {
+    const from = idMap[c.from_node];
+    const to = idMap[c.to_node];
+    if (from && to) {
+      try {
+        editor.addConnection(from, to, c.from_output || 'output_1', c.to_input || 'input_1');
+      } catch (_) {}
+    }
+  }
+
+  document.getElementById('flow-name').value = name || 'Imported Flow';
+  clearProperties();
+  clearExecutionLog();
+  refreshAllNodeDisplays();
+  updateAppButton();
+}
+
+async function loadExamplesList() {
+  const listEl = document.getElementById('examples-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="flows-empty">Loading examples...</div>';
+
+  try {
+    const resp = await fetch('/api/examples');
+    if (!resp.ok) throw new Error('Failed to load examples');
+    const examples = await resp.json();
+
+    if (!examples.length) {
+      listEl.innerHTML = '<div class="flows-empty">No tracked examples found</div>';
+      return;
+    }
+
+    listEl.innerHTML = examples.map((example) => {
+      const moduleList = (example.modules || []).join(', ');
+      return `
+        <div class="flow-item">
+          <div class="flow-item-info" onclick="importExample('${escapeAttr(example.id)}')">
+            <div class="flow-item-name">${escapeHtml(example.name)}</div>
+            <div class="flow-item-meta">${escapeHtml(example.complexity || 'simple')} · ${example.node_count || 0} nodes</div>
+            <div class="prompt-preview">${escapeHtml(example.description || '')}</div>
+            <div class="flow-item-meta" style="margin-top:6px">${escapeHtml(moduleList)}</div>
+          </div>
+          <div class="flow-item-actions">
+            <button class="btn-primary" onclick="event.stopPropagation(); importExample('${escapeAttr(example.id)}')">Load</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    listEl.innerHTML = `<div class="flows-empty">Error loading examples: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function importExample(exampleId) {
+  try {
+    const resp = await fetch(`/api/examples/${exampleId}`);
+    if (!resp.ok) throw new Error('Failed to load example');
+    const example = await resp.json();
+    importFlowGraph(example.flow_graph || {}, example.name || 'Example Flow');
+    closeModal('examples-modal');
+    showToast(`Example loaded: ${example.name || exampleId}`);
+  } catch (err) {
+    showToast('Error loading example: ' + err.message, 'error');
+  }
+}
+
 /* ═══════════════ RUN / STOP ═══════════════ */
 
 async function runFlow() {
@@ -2352,32 +2448,9 @@ async function generateFlowFromDescription() {
     }
 
     const graph = result.flow_graph;
-    editor.clear();
-    currentFlowId = null;
-
-    const idMap = {};
-    for (const n of graph.nodes) {
-      const type = n.type;
-      if (!nodeTemplates[type]) continue;
-      const io = nodeIO[type] || { inputs: 1, outputs: 1 };
-      const data = { ...JSON.parse(JSON.stringify(defaultNodeData[type] || {})), ...(n.data || {}) };
-      const nid = editor.addNode(type, io.inputs, io.outputs, n.x || 100, n.y || 200, 'node-' + type, data, nodeTemplates[type]);
-      idMap[n.id] = nid;
-    }
-
-    for (const c of (graph.connections || [])) {
-      const from = idMap[c.from_node];
-      const to = idMap[c.to_node];
-      if (from && to) {
-        try {
-          editor.addConnection(from, to, c.from_output || 'output_1', c.to_input || 'input_1');
-        } catch (_) {}
-      }
-    }
-
+    importFlowGraph(graph, 'Generated Flow');
     closeModal('nl-builder-modal');
     showToast('Flow generated! Review and adjust as needed.', 'success');
-    document.getElementById('flow-name').value = 'Generated Flow';
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message;
     statusEl.style.color = 'var(--accent-red)';

@@ -1,0 +1,124 @@
+{
+  "id": "research-brief-with-review",
+  "name": "Research Brief With Review",
+  "description": "Fetch multiple URLs in parallel, synthesize a markdown brief, route it through a human approval gate, and save the approved result.",
+  "complexity": "complex",
+  "use_case": "End-to-end demo for map-reduce, HTTP fetches, prompt scaffolding, agent synthesis, human review, file output, and final results.",
+  "modules": ["start", "map_reduce", "prompt_template", "react_agent", "hitl", "file_write", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "start",
+        "x": 80,
+        "y": 220,
+        "data": {
+          "label": "Source URLs",
+          "input_text": "https://example.com\\nhttps://example.org\\nhttps://example.net"
+        }
+      },
+      {
+        "id": "2",
+        "type": "map_reduce",
+        "x": 360,
+        "y": 220,
+        "data": {
+          "label": "Fetch Sources",
+          "split_mode": "newline",
+          "reduce_mode": "concatenate",
+          "separator": "\\n\\n--- SOURCE BREAK ---\\n\\n",
+          "max_parallel": 3,
+          "map_node_type": "http_request",
+          "map_node_data": {
+            "method": "GET",
+            "url_template": "{{input}}",
+            "headers_json": "",
+            "body_template": "",
+            "extract_path": "",
+            "timeout": 20
+          },
+          "reduce_code": "output = '\\n'.join(items)"
+        }
+      },
+      {
+        "id": "3",
+        "type": "prompt_template",
+        "x": 660,
+        "y": 220,
+        "data": {
+          "label": "Frame Research Goal",
+          "template": "Create a concise research brief from the source material below.\\n\\nRequired sections:\\n## Overview\\n## Signals\\n## Risks\\n## Next Questions\\n\\nMention contradictions when the sources disagree.\\n\\nSource material:\\n{{input}}"
+        }
+      },
+      {
+        "id": "4",
+        "type": "react_agent",
+        "x": 970,
+        "y": 220,
+        "data": {
+          "label": "Research Synthesizer",
+          "goal": "",
+          "provider": "",
+          "model": "",
+          "system_prompt": "You are a research analyst. Think carefully, use tools only if they help, and finish with FINAL_ANSWER containing polished markdown.",
+          "temperature": 0.2,
+          "max_tokens": 1800,
+          "max_iterations": 6,
+          "allowed_tools": "code"
+        }
+      },
+      {
+        "id": "5",
+        "type": "hitl",
+        "x": 1280,
+        "y": 220,
+        "data": {
+          "label": "Human Approval",
+          "prompt_message": "Review the generated research brief before it is written to disk.",
+          "allow_edit": true,
+          "timeout": 600
+        }
+      },
+      {
+        "id": "6",
+        "type": "file_write",
+        "x": 1580,
+        "y": 160,
+        "data": {
+          "label": "Save Approved Brief",
+          "file_path": "output/research-brief.md",
+          "write_mode": "write"
+        }
+      },
+      {
+        "id": "7",
+        "type": "output",
+        "x": 1830,
+        "y": 160,
+        "data": {
+          "label": "Approved Brief",
+          "output_name": "approved_brief"
+        }
+      },
+      {
+        "id": "8",
+        "type": "output",
+        "x": 1580,
+        "y": 300,
+        "data": {
+          "label": "Rejected Draft",
+          "output_name": "rejected_brief"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "1", "from_output": "output_1", "to_node": "2", "to_input": "input_1" },
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" },
+      { "from_node": "3", "from_output": "output_1", "to_node": "4", "to_input": "input_1" },
+      { "from_node": "4", "from_output": "output_1", "to_node": "5", "to_input": "input_1" },
+      { "from_node": "5", "from_output": "output_1", "to_node": "6", "to_input": "input_1" },
+      { "from_node": "6", "from_output": "output_1", "to_node": "7", "to_input": "input_1" },
+      { "from_node": "5", "from_output": "output_2", "to_node": "8", "to_input": "input_1" }
+    ]
+  }
+}

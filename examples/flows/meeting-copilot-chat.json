@@ -1,0 +1,113 @@
+{
+  "id": "meeting-copilot-chat",
+  "name": "Meeting Copilot Chat",
+  "description": "A chat-style interface that remembers recent turns and responds like a lightweight meeting copilot.",
+  "complexity": "simple",
+  "use_case": "Shows how UI interface nodes and conversation memory can turn a flow into a reusable local app.",
+  "modules": ["ui_interface", "start", "conversation_memory", "prompt_template", "llm", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "ui_interface",
+        "x": 80,
+        "y": 40,
+        "data": {
+          "label": "Meeting Copilot UI",
+          "mode": "chat",
+          "title": "Meeting Copilot",
+          "description": "Capture decisions, action items, and missing owners while you chat.",
+          "theme": "dark",
+          "chat_history_path": "assistant/chat_history.json",
+          "output_node_key": "assistant_reply",
+          "show_thinking": false,
+          "accent_color": "#0ea5e9",
+          "fields": [],
+          "output_fields": []
+        }
+      },
+      {
+        "id": "2",
+        "type": "start",
+        "x": 80,
+        "y": 260,
+        "data": {
+          "label": "Latest User Turn",
+          "input_text": "Can you recap the decisions from today's vendor sync and call out follow-ups?"
+        }
+      },
+      {
+        "id": "3",
+        "type": "conversation_memory",
+        "x": 360,
+        "y": 260,
+        "data": {
+          "label": "Store User Turn",
+          "memory_id": "meeting_copilot",
+          "strategy": "sliding_window",
+          "max_messages": 20,
+          "role": "user",
+          "output_format": "text",
+          "persist_path": "assistant/chat_history.json"
+        }
+      },
+      {
+        "id": "4",
+        "type": "prompt_template",
+        "x": 640,
+        "y": 260,
+        "data": {
+          "label": "Copilot Prompt",
+          "template": "You are a meeting copilot. Use the running transcript below to answer the latest user turn.\\n\\nPrioritize:\\n- decisions that were made\\n- action items and owners\\n- unresolved questions\\n\\nTranscript:\\n{{input}}"
+        }
+      },
+      {
+        "id": "5",
+        "type": "llm",
+        "x": 930,
+        "y": 260,
+        "data": {
+          "label": "Copilot Response",
+          "provider": "",
+          "model": "",
+          "system_prompt": "You help teams turn messy discussion into concrete next steps.",
+          "user_prompt_template": "{{input}}",
+          "temperature": 0.3,
+          "max_tokens": 700
+        }
+      },
+      {
+        "id": "6",
+        "type": "conversation_memory",
+        "x": 1220,
+        "y": 180,
+        "data": {
+          "label": "Store Assistant Turn",
+          "memory_id": "meeting_copilot",
+          "strategy": "sliding_window",
+          "max_messages": 20,
+          "role": "assistant",
+          "output_format": "text",
+          "persist_path": "assistant/chat_history.json"
+        }
+      },
+      {
+        "id": "7",
+        "type": "output",
+        "x": 1220,
+        "y": 340,
+        "data": {
+          "label": "Assistant Reply",
+          "output_name": "assistant_reply"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" },
+      { "from_node": "3", "from_output": "output_1", "to_node": "4", "to_input": "input_1" },
+      { "from_node": "4", "from_output": "output_1", "to_node": "5", "to_input": "input_1" },
+      { "from_node": "5", "from_output": "output_1", "to_node": "6", "to_input": "input_1" },
+      { "from_node": "5", "from_output": "output_1", "to_node": "7", "to_input": "input_1" }
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "grounded-context-retriever",
+  "name": "Grounded Context Retriever",
+  "description": "Query a local vector collection and return the most relevant context snippets.",
+  "complexity": "simple",
+  "use_case": "Pairs with the knowledge-base-bootstrap example to demonstrate local semantic retrieval.",
+  "modules": ["start", "rag_retrieve", "output"],
+  "flow_graph": {
+    "nodes": [
+      {
+        "id": "1",
+        "type": "start",
+        "x": 80,
+        "y": 220,
+        "data": {
+          "label": "Question",
+          "input_text": "What should we review every quarter?"
+        }
+      },
+      {
+        "id": "2",
+        "type": "rag_retrieve",
+        "x": 380,
+        "y": 220,
+        "data": {
+          "label": "Retrieve Context",
+          "collection": "example_notes",
+          "top_k": 3,
+          "threshold": 0.1,
+          "output_format": "context"
+        }
+      },
+      {
+        "id": "3",
+        "type": "output",
+        "x": 700,
+        "y": 220,
+        "data": {
+          "label": "Retrieved Context",
+          "output_name": "retrieved_context"
+        }
+      }
+    ],
+    "connections": [
+      { "from_node": "1", "from_output": "output_1", "to_node": "2", "to_input": "input_1" },
+      { "from_node": "2", "from_output": "output_1", "to_node": "3", "to_input": "input_1" }
+    ]
+  }
+}

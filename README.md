@@ -7,6 +7,7 @@ Local-first visual builder for LLM workflows and agent flows.
 - Application code under `server.py`, `engine/`, and `static/`
 - Docs such as `ROADMAP.md`
 - Example config templates such as `.env.example` and `settings.example.json`
+- Curated example flows under `examples/flows/`
 
 ## What Stays Local
 
@@ -41,6 +42,10 @@ python server.py
 ```
 
 Then open `http://localhost:8090`.
+
+## Examples
+
+The editor includes an `Examples` button that loads tracked demo flows from `examples/flows/` onto the canvas as new unsaved local flows.
 
 ## Configuration
 
