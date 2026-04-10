@@ -47,6 +47,14 @@ Then open `http://localhost:8090`.
 
 The editor includes an `Examples` button that loads tracked demo flows from `examples/flows/` onto the canvas as new unsaved local flows.
 
+## UI Automation
+
+Playwright-based UI checks are available through npm:
+
+- `npm run ui:test` runs the editor smoke tests
+- `npm run ui:screenshots` captures main UI states into `output/ui-snapshots/`
+- `npm run build` runs the UI test-and-screenshot build hook
+
 ## Configuration
 
 Configuration priority is:

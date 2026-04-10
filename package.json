@@ -1,0 +1,13 @@
+{
+  "name": "agent-flow-studio-ui-tests",
+  "private": true,
+  "scripts": {
+    "ui:test": "playwright test tests/ui/editor.spec.js",
+    "ui:screenshots": "playwright test tests/ui/screenshots.spec.js",
+    "ui:artifacts": "node scripts/ui/build-hook.mjs",
+    "build": "node scripts/ui/build-hook.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}
